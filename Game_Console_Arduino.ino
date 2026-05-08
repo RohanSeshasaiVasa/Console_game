@@ -13,9 +13,6 @@ void loop() {
     matrix.show();
     delay(200);
   }
+  matrix.clear();
 
-  for (int i = 0; i < matrix.numPixels(); i++) {
-    matrix.setPixelColor(i, 0, 0, 0);
-    matrix.show();
-  }
 }
