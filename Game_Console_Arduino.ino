@@ -7,9 +7,7 @@ void setup() {
   matrix.begin();
   Serial.begin(9600);
   randomSeed(analogRead(0));
-}
 
-void loop() {
   matrix.clear();
   int count = 0;
   
@@ -37,7 +35,11 @@ void loop() {
       Serial.print(" ");
       matrix.setPixelColor(randomNum[i], 5, 0, 0);
     }
-    
+    matrix.show();
+    delay(5000);
+    matrix.clear();
+    matrix.show();
+    delay(300);
 
     Serial.print("Pixel Green : ");
     for (int i = 4; i<6; i++) {
@@ -48,5 +50,8 @@ void loop() {
     Serial.println();
     matrix.show();
     delay(1000);
-  }
+}
 
+void loop() {
+  
+  }
