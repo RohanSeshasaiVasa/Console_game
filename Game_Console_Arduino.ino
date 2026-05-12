@@ -39,6 +39,6 @@ void loop() {
     }
     Serial.println();
     matrix.show();
-    delay(1000);
+    delay(5000);
   }
 
