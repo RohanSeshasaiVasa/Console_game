@@ -2,8 +2,12 @@
 
 Adafruit_NeoPixel matrix(16, 6, NEO_GRB + NEO_KHZ800);
 int randomNum[6];
+const int X = A2;
+const int Y = A3;
+const int SW = 4;
 
 void setup() {
+  pinMode(SW, INPUT_PULLUP);
   matrix.begin();
   Serial.begin(9600);
   randomSeed(analogRead(0));
@@ -53,5 +57,25 @@ void setup() {
 }
 
 void loop() {
-  
+  int x = analogRead(X);
+  int y = analogRead(Y);
+  int btn = digitalRead(SW);
+
+  if (isClicked(btn) == LOW) {
+    while(true) {
+      matrix.setPixelColor(randomNum[5], 0, 5, 0);
+      matrix.show();
+      delay(750);
+      matrix.setPixelColor(randomNum[5], 0, 0, 0);
+      matrix.show();
+      delay(750);
+    }
   }
+}
+
+bool isClicked(int btn) {
+  if(btn == LOW) {
+    return true;
+  }
+  return false;
+}
