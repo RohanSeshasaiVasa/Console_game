@@ -17,16 +17,16 @@ void setup() {
   
   while (count < 6) {
     int r = random(16);
-    bool isDuplicate = false;
+    bool isReject = false;
   
       for (int i = 0; i < count; i++) {
-        if (randomNum[i] == r) {
-          isDuplicate = true;
+        if ((randomNum[i] == r) || (randomNum[i] == r+1) || (randomNum[i] == r-1 )) {
+          isReject = true;
           break;
         }
       }
   
-  if (!isDuplicate) {
+  if (!isReject) {
     randomNum[count] = r;
     count++;
       }
@@ -42,11 +42,10 @@ void setup() {
     matrix.show();
     delay(5000);
     matrix.clear();
-    matrix.show();
-    delay(300);
 
     Serial.print("Pixel Green : ");
     for (int i = 4; i<6; i++) {
+
       Serial.print(randomNum[i]);
       Serial.print(" ");
       matrix.setPixelColor(randomNum[i], 0, 5, 0);
