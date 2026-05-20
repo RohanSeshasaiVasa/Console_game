@@ -1,10 +1,12 @@
-#include <Adafruit_NeoPixel.h>
+/*#include <Adafruit_NeoPixel.h>
 
 Adafruit_NeoPixel matrix(16, 6, NEO_GRB + NEO_KHZ800);
 int randomNum[6];
 const int X = A2;
 const int Y = A3;
 const int SW = 4;
+
+int position = 0;
 
 void setup() {
   pinMode(SW, INPUT_PULLUP);
@@ -57,6 +59,17 @@ void setup() {
 
 void loop() {
   int x = analogRead(X);
+
+  if (x < 300) {
+    position = position - 1;
+    Serial.println(position);
+    delay(300);
+  } else if (x > 700) {
+    position = position - 1;
+    Serial.println(position);
+    delay(300);
+  }
+
   int y = analogRead(Y);
   int btn = digitalRead(SW);
 
@@ -77,4 +90,49 @@ bool isClicked(int btn) {
     return true;
   }
   return false;
+}*/
+
+
+int joystickX = A2;
+int joystickY = A3;
+int position = 0;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  int xValue = analogRead(joystickX);
+  // Joystick moved LEFT
+  if (xValue < 300) {
+    position = position - 1;
+    Serial.print("Horizontal : ");
+    Serial.println(position);
+    delay(300);
+  }
+
+  // Joystick moved RIGHT
+  else if (xValue > 700) {
+    position = position + 1;
+    Serial.print("Horizontal : ");
+    Serial.println(position);
+    delay(300);
+  }
+
+  int yValue = analogRead(joystickY);
+  // Joystick moved LEFT
+  if (yValue < 300) {
+    position = position - 1;
+    Serial.print("Vertical : ");
+    Serial.println(position);
+    delay(300);
+  }
+
+  // Joystick moved RIGHT
+  else if (yValue > 700) {
+    position = position + 1;
+    Serial.print("Vertical : ");
+    Serial.println(position);
+    delay(300);
+  }
 }
