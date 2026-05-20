@@ -93,6 +93,11 @@ bool isClicked(int btn) {
 }*/
 
 
+
+
+
+
+/*
 int joystickX = A2;
 int joystickY = A3;
 int position = 0;
@@ -134,5 +139,41 @@ void loop() {
     Serial.print("Vertical : ");
     Serial.println(position);
     delay(300);
+  }
+}
+*/
+
+
+
+
+#include <Arduino.h>
+#include <Adafruit_NeoPixel.h>
+#define SW 4
+Adafruit_NeoPixel matrix(16, 6, NEO_GRB + NEO_KHZ800);
+
+void setup() {
+  matrix.begin();
+  Serial.begin(9600);
+
+  pinMode(SW, INPUT_PULLUP);
+
+  randomSeed(analogRead(A0));
+
+  matrix.clear();
+  matrix.show();
+  
+}
+
+void loop() {
+  if (digitalRead(SW) == LOW) {
+    int pixel = random(16);
+    Serial.print("Pixel : ");
+    Serial.print(pixel);
+    matrix.clear();
+    matrix.setPixelColor(pixel, 5, 0, 0);
+    Serial.println("");
+  
+    matrix.show();
+    delay(1000);
   }
 }
