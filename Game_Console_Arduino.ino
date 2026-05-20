@@ -151,6 +151,9 @@ void loop() {
 #define SW 4
 Adafruit_NeoPixel matrix(16, 6, NEO_GRB + NEO_KHZ800);
 
+int joystickX = A2;
+int position = 0;
+
 void setup() {
   matrix.begin();
   Serial.begin(9600);
@@ -165,15 +168,33 @@ void setup() {
 }
 
 void loop() {
+  int xValue = analogRead(joystickX);
+
   if (digitalRead(SW) == LOW) {
-    int pixel = random(16);
+    position = random(16);
     Serial.print("Pixel : ");
-    Serial.print(pixel);
+    Serial.print(position);
     matrix.clear();
-    matrix.setPixelColor(pixel, 5, 0, 0);
+    matrix.setPixelColor(position, 5, 0, 0);
     Serial.println("");
-  
     matrix.show();
     delay(1000);
+    matrix.clear();
   }
+  if (xValue < 300 && position < 15) {
+    position--;
+    matrix.clear();
+    matrix.setPixelColor(position, 5, 0, 0);
+    matrix.show();
+    delay(200);
+  }
+
+  if (xValue > 700 && position > 0) {
+    position++;
+    matrix.clear();
+    matrix.setPixelColor(position, 5, 0, 0);
+    matrix.show();
+    delay(200);
+  }
+  
 }
