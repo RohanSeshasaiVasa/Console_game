@@ -1,18 +1,29 @@
-/*#include <Adafruit_NeoPixel.h>
-
+#include <Arduino.h>
+#include <Adafruit_NeoPixel.h>
+#define SW 4
 Adafruit_NeoPixel matrix(16, 6, NEO_GRB + NEO_KHZ800);
-int randomNum[6];
-const int X = A2;
-const int Y = A3;
-const int SW = 4;
 
-int position = 0;
+void(*resetFunc)(void) = 0;
+int joystickX = A2;
+int joystickY = A3;
+int randomNum[6];
+int position[2] = {0, 0};
+
+int convertPosition(int pos) {
+  int row = pos / 4;
+  int col = pos % 4;
+  if (row % 2 == 1) {
+    col = 3 - col;
+  }
+  return row * 4 + col;
+}
 
 void setup() {
-  pinMode(SW, INPUT_PULLUP);
   matrix.begin();
+  matrix.show();
   Serial.begin(9600);
-  randomSeed(analogRead(0));
+  randomSeed(analogRead(A0));
+  pinMode(SW, INPUT_PULLUP);
 
   matrix.clear();
   int count = 0;
@@ -55,127 +66,54 @@ void setup() {
     Serial.println();
     matrix.show();
     delay(1000);
-}
 
-void loop() {
-  int x = analogRead(X);
-
-  if (x < 300) {
-    position = position - 1;
-    Serial.println(position);
-    delay(300);
-  } else if (x > 700) {
-    position = position - 1;
-    Serial.println(position);
-    delay(300);
-  }
-
-  int y = analogRead(Y);
-  int btn = digitalRead(SW);
-
-  if (isClicked(btn) == LOW) {
-    while(true) {
-      matrix.setPixelColor(randomNum[5], 0, 5, 0);
-      matrix.show();
-      delay(750);
-      matrix.setPixelColor(randomNum[5], 0, 0, 0);
-      matrix.show();
-      delay(750);
-    }
-  }
-}
-
-bool isClicked(int btn) {
-  if(btn == LOW) {
-    return true;
-  }
-  return false;
-}*/
-
-
-#include <Arduino.h>
-#include <Adafruit_NeoPixel.h>
-#define SW 4
-Adafruit_NeoPixel matrix(16, 6, NEO_GRB + NEO_KHZ800);
-
-int joystickX = A2;
-int joystickY = A3;
-// int position = 0;
-int position[2] = {0, 0};
-
-int convertPosition(int pos) {
-  int row = pos / 4;
-  int col = pos % 4;
-  if (row % 2 == 1) {
-    col = 3 - col;
-  }
-  return row * 4 + col;
-}
-
-void setup() {
-  matrix.begin();
-  matrix.show();
-  Serial.begin(9600);
-  pinMode(SW, INPUT_PULLUP);
-  randomSeed(analogRead(A0));
+    position[0] = randomNum[4];
+    position[1] = randomNum[5];
 }
 
 void loop() {
   int xValue = analogRead(joystickX);
   int yValue = analogRead(joystickY);
 
-  if (digitalRead(SW) == LOW) {
-    // position = random(16);
-    position[0] = random(16);
-    position[1] = random(16);
-    Serial.print("Pixel : ");
-    Serial.print(position[0], position[1]);
-    matrix.clear();
-    int ledNumber = convertPosition(position[0]);
-    int ledNumber2 = position[1];
-    matrix.setPixelColor(ledNumber, 5, 0, 0);
-    matrix.setPixelColor(ledNumber2, 5, 0, 0);
-    matrix.show();
-    delay(1000);
-  }
-  // Horizontal movement
-  if (xValue < 300 && position[0] > 0 && position[1] > 0) {
+  if (xValue < 300 && position[0] % 4 > 0) {
     position[0]--;
     matrix.clear();
     int ledNumber = convertPosition(position[0]);
-    matrix.setPixelColor(ledNumber, 5, 0, 0);
-    matrix.setPixelColor(position[1], 5, 0, 0);
+    matrix.setPixelColor(ledNumber, 0, 5, 0);
+    matrix.setPixelColor(position[1], 0, 5, 0);
     matrix.show();
     delay(200);
   }
-
-  if (xValue > 700 && position[0] < 15 && position[1] < 15) {
+  if (xValue > 700 && position[0] % 4 < 3) {
     position[0]++;
     matrix.clear();
     int ledNumber = convertPosition(position[0]);
-    matrix.setPixelColor(ledNumber, 5, 0, 0);
-    matrix.setPixelColor(position[1], 5, 0, 0);
+    matrix.setPixelColor(ledNumber, 0, 5, 0);
+    matrix.setPixelColor(position[1], 0, 5, 0);
     matrix.show();
     delay(200);
   }
-  // Vertical movement
-  if (yValue < 300 && position[0] > 0 && position[1] > 0) {
+  if (yValue < 300 && position[0] < 12) {
     position[0] = position[0] + 4;
     matrix.clear();
     int ledNumber = convertPosition(position[0]);
-    matrix.setPixelColor(ledNumber, 5, 0, 0);
-    matrix.setPixelColor(position[1], 5, 0, 0);
+    matrix.setPixelColor(ledNumber, 0, 5, 0);
+    matrix.setPixelColor(position[1], 0, 5, 0);
+    matrix.show();
+    delay(200);
+  }
+  if (yValue > 700 && position[0] >= 4) {
+    position[0] = position[0] - 4;
+    matrix.clear();
+    int ledNumber = convertPosition(position[0]);
+    matrix.setPixelColor(ledNumber, 0, 5, 0);
+    matrix.setPixelColor(position[1], 0, 5, 0);
     matrix.show();
     delay(200);
   }
 
-  if (yValue > 700 && position[0] < 15 && position[1] < 15) {
-    position[0] = position[0] - 4;
-    matrix.clear();
-    int ledNumber = convertPosition(position[0]);
-    matrix.setPixelColor(ledNumber, 5, 0, 0);
-    matrix.setPixelColor(position[1], 5, 0, 0);
-    matrix.show();
-    delay(200);
+  if (digitalRead(SW) == LOW) {
+    delay(50);
+    resetFunc();
   }
 }
